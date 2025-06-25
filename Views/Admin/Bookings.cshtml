@@ -1,0 +1,601 @@
+﻿@model List<EventManagementApp.Controllers.AdminBookingDto>
+
+@{
+    ViewData["Title"] = "Manage Bookings";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .bookings-container {
+        padding: 30px;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 140px);
+    }
+
+    .bookings-header {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-info h2 {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .header-info p {
+        margin: 0;
+        color: #6c757d;
+    }
+
+    .bookings-stats {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filters-section {
+        background: white;
+        padding: 20px 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+    }
+
+    .filters-row {
+        display: flex;
+        gap: 15px;
+        align-items: end;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #495057;
+        font-size: 0.9rem;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .filter-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        background: #0056b3;
+    }
+
+    .clear-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-left: 10px;
+    }
+
+    .clear-btn:hover {
+        background: #545b62;
+    }
+
+    .bookings-table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background: #f8f9fa;
+        padding: 20px 25px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-header h3 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .export-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+    .export-btn:hover {
+        background: #218838;
+    }
+
+    .bookings-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .bookings-table th {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #e9ecef;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .bookings-table td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f1f3f4;
+        vertical-align: middle;
+    }
+
+    .bookings-table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .user-name {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .user-email {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .event-info {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .event-title {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 3px;
+    }
+
+    .event-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .event-location {
+        font-size: 0.8rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .booking-status {
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .status-confirmed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .booking-date {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-view {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: #0056b3;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-cancel {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        background: #c82333;
+    }
+
+    .btn-email {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-email:hover {
+        background: #545b62;
+        color: white;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+
+    .empty-state h4 {
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    .empty-state p {
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+    }
+
+    .pagination-container {
+        background: white;
+        padding: 20px 25px;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .results-info {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .modal-header h5 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .modal-body p {
+        margin-bottom: 20px;
+        color: #495057;
+        line-height: 1.5;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .modal-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .modal-btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .modal-btn-danger:hover {
+        background: #c82333;
+    }
+
+    .modal-btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .modal-btn-secondary:hover {
+        background: #545b62;
+    }
+
+    
+</style>
+
+<div class="bookings-container">
+    <!-- Header Section -->
+    <div class="bookings-header">
+        <div class="header-info">
+            <h2>Booking Management</h2>
+            <p>Manage and monitor all event bookings</p>
+        </div>
+        <div class="bookings-stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalBookings">@(Model?.Count ?? 0)</div>
+                <div class="stat-label">Total Bookings</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="confirmedBookings">@(Model?.Count(b => b.Status == "Confirmed") ?? 0)</div>
+                <div class="stat-label">Confirmed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="cancelledBookings">@(Model?.Count(b => b.Status == "Cancelled") ?? 0)</div>
+                <div class="stat-label">Cancelled</div>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <!-- Bookings Table -->
+    <div class="bookings-table-container">
+        <div class="table-header">
+            <h3>All Bookings</h3>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div style="max-height: 600px; overflow-y: auto;">
+                <table class="bookings-table" id="bookingsTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Event</th>
+                            <th>Booking Date</th>
+                            <th>Event Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in Model.OrderByDescending(b => b.BookingDate))
+                        {
+                            <tr class="booking-row" 
+                                data-event="@booking.EventTitle" 
+                                data-status="@booking.Status" 
+                                data-user="@booking.Username @booking.UserEmail"
+                                data-booking-date="@booking.BookingDate.ToString("yyyy-MM-dd")"
+                                data-event-date="@booking.EventDate.ToString("yyyy-MM-dd")">
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-name">@booking.Username</div>
+                                        <div class="user-email">@booking.UserEmail</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="event-info">
+                                        <div class="event-title">@booking.EventTitle</div>
+                                        <div class="event-date">
+                                            <i class="fas fa-calendar"></i>
+                                            @booking.EventDate.ToString("MMM dd, yyyy HH:mm")
+                                        </div>
+                                        <div class="event-location">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            @booking.EventLocation
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="booking-date">
+                                    @booking.BookingDate.ToString("MMM dd, yyyy HH:mm")
+                                </td>
+                                <td>
+                                    @booking.EventDate.ToString("MMM dd, yyyy HH:mm")
+                                </td>
+                                <td>
+                                    <span class="booking-status status-@booking.Status.ToLower()">
+                                        @booking.Status
+                                    </span>
+                                </td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination-container">
+                <div class="results-info">
+                    Showing <span id="visibleCount">@Model.Count</span> of @Model.Count bookings
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-ticket-alt"></i>
+                <h4>No Bookings Found</h4>
+                <p>There are no bookings to display yet.</p>
+                <a href="@Url.Action("Events", "Admin")" class="btn btn-primary">
+                    <i class="fas fa-calendar"></i> View Events
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        let allBookings = [];
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBookings();
+        });
+        
+        function loadBookings() {
+            const rows = document.querySelectorAll('.booking-row');
+            allBookings = Array.from(rows);
+        }
+        
+        
+        
+        function confirmCancelBooking(bookingId, eventTitle, username) {
+            const modal = document.getElementById('cancelModal');
+            const message = document.getElementById('cancelMessage');
+            const form = document.getElementById('cancelForm');
+            
+            message.innerHTML = `Are you sure you want to cancel <strong>${username}'s</strong> booking for <strong>${eventTitle}</strong>?<br><br>This action cannot be undone.`;
+            form.action = '@Url.Action("CancelBooking", "Admin")/' + bookingId;
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeCancelModal() {
+            document.getElementById('cancelModal').style.display = 'none';
+        }
+        
+        
+        // Close modal when clicking outside
+        // document.getElementById('cancelModal').addEventListener('click', function(e) {
+        //     if (e.target === this) {
+        //         closeCancelModal();
+        //     }
+        // });
+        
+
+    </script>
+}

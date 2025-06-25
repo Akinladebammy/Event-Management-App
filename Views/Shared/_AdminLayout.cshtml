@@ -1,0 +1,358 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Event Management Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .admin-brand {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+            .admin-brand h4 {
+                margin: 0;
+                font-weight: 600;
+                color: white;
+            }
+
+            .admin-brand small {
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.8rem;
+            }
+
+        .admin-nav {
+            padding: 0;
+            list-style: none;
+            margin: 0;
+        }
+
+            .admin-nav li {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .admin-nav a {
+                display: block;
+                padding: 15px 20px;
+                color: rgba(255, 255, 255, 0.9);
+                text-decoration: none;
+                transition: all 0.3s ease;
+                border-left: 3px solid transparent;
+            }
+
+                .admin-nav a:hover,
+                .admin-nav a.active {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    border-left-color: #3498db;
+                    text-decoration: none;
+                }
+
+            .admin-nav i {
+                width: 20px;
+                margin-right: 10px;
+                text-align: center;
+            }
+
+        .admin-main {
+            margin-left: 250px;
+            flex: 1;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-title {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-user-info {
+            text-align: right;
+        }
+
+        .admin-user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .admin-user-role {
+            color: #6c757d;
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+            .logout-btn:hover {
+                background: #c82333;
+                color: white;
+                text-decoration: none;
+            }
+
+        .admin-content {
+            padding: 0;
+            min-height: calc(100vh - 70px);
+        }
+
+        .breadcrumb-container {
+            background: white;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .breadcrumb {
+            margin: 0;
+            background: transparent;
+            padding: 0;
+        }
+
+        .breadcrumb-item a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+            .breadcrumb-item a:hover {
+                text-decoration: underline;
+            }
+
+        .alert-container {
+            margin: 20px 30px 0 30px;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /*  (max-width: 768px) {
+            .admin-sidebar
+
+        {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .admin-sidebar.show {
+            transform: translateX(0);
+        }
+
+        .admin-main {
+            margin-left: 0;
+        }
+
+        .admin-header {
+            padding: 15px 20px;
+        }
+
+        .mobile-menu-btn {
+            display: block;
+            background: none;
+            border: none;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        }
+
+        .mobile-menu-btn {
+            display: none;
+        } */
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <div class="admin-sidebar" id="adminSidebar">
+            <div class="admin-brand">
+                <h4>Event Admin</h4>
+                <small>Management Portal</small>
+            </div>
+            <ul class="admin-nav">
+                <li>
+                    <a href="@Url.Action("Dashboard", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("Events", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Events" ? "active" : "")">
+                        <i class="fas fa-calendar"></i> Events
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("CreateEvent", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "CreateEvent" ? "active" : "")">
+                        <i class="fas fa-plus"></i> Create Event
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("Bookings", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Bookings" ? "active" : "")">
+                        <i class="fas fa-ticket-alt"></i> Bookings
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("Users", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Users" ? "active" : "")">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Header -->
+            <div class="admin-header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="admin-title">@ViewData["Title"]</h1>
+                </div>
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <p class="admin-user-name">@Context.Session.GetString("Username")</p>
+                        <p class="admin-user-role">Administrator</p>
+                    </div>
+                    <form asp-controller="User" asp-action="Logout" method="post" style="margin: 0;">
+                        <button type="submit" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Admin")">Dashboard</a></li>
+                        @if (ViewContext.RouteData.Values["action"].ToString() != "Dashboard")
+                        {
+                            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                        }
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Alerts -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert-container">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert-container">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            }
+
+            <!-- Page Content -->
+            <div class="admin-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('adminSidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+
+            if (window.innerWidth <= 768 && !sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+}
